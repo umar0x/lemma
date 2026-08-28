@@ -3,6 +3,7 @@ import "@fontsource-variable/fraunces";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/newsreader";
 import "@fontsource-variable/jetbrains-mono";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
