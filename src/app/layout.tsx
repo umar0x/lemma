@@ -5,7 +5,6 @@ import "@fontsource-variable/newsreader";
 import "@fontsource-variable/jetbrains-mono";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import { PostHogProvider } from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: "Lemma · live LaTeX, co-authored with your agent",
@@ -54,9 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
-      <body>
-        <PostHogProvider>{children}</PostHogProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
