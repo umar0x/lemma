@@ -1,7 +1,5 @@
+import LemmaApp from "@/components/shell/LemmaApp";
+
 export default function Page() {
-  return (
-    <main style={{ padding: "2rem", fontFamily: "monospace" }}>
-      <p>lemma scaffold</p>
-    </main>
-  );
+  return <LemmaApp />;
 }
