@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import posthog from "posthog-js";
 import { Download, FileText, Printer } from "lucide-react";
 import { useWorkspace } from "@/state/workspace";
 import { renderDocumentCached } from "@/core/latex/renderCache";
@@ -149,6 +150,11 @@ export function ExportDialog({ open, onClose }: ExportDialogProps) {
 
   const handlePrint = () => {
     if (!config) return;
+    posthog.capture("pdf_printed", {
+      paper: config.paper,
+      landscape: config.landscape,
+      estimated_pages: estimatedPages,
+    });
     setPrintConfig(config);
     onClose();
     requestAnimationFrame(() => {

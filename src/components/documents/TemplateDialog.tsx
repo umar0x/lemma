@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import { BookOpen, FileText, GraduationCap, ListChecks, ScrollText } from "lucide-react";
 import { listTemplates, type TemplateId } from "@/core/templates";
 import { useWorkspace } from "@/state/workspace";
@@ -34,6 +35,7 @@ export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
       return;
     }
     createDocument(template, trimmed);
+    posthog.capture("document_created", { template });
     setTitle("");
     setTemplate("notes");
     setError(null);

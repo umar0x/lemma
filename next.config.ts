@@ -30,13 +30,39 @@ const devOnlyHeaders: Pick<NextConfig, "headers"> =
       }
     : {};
 
+// PostHog reverse proxy rewrites — active only during `next dev` (static export
+// does not emit rewrites; production proxy is handled by vercel.json / netlify.toml).
+const devOnlyRewrites: Pick<NextConfig, "rewrites"> =
+  process.env.NODE_ENV === "development"
+    ? {
+        async rewrites() {
+          return [
+            {
+              source: "/ingest/static/:path*",
+              destination: "https://us-assets.i.posthog.com/static/:path*",
+            },
+            {
+              source: "/ingest/array/:path*",
+              destination: "https://us-assets.i.posthog.com/array/:path*",
+            },
+            {
+              source: "/ingest/:path*",
+              destination: "https://us.i.posthog.com/:path*",
+            },
+          ];
+        },
+      }
+    : {};
+
 const nextConfig: NextConfig = {
   output: "export",
   reactStrictMode: true,
   images: { unoptimized: true },
   typescript: { ignoreBuildErrors: false },
   devIndicators: false,
+  skipTrailingSlashRedirect: true,
   ...devOnlyHeaders,
+  ...devOnlyRewrites,
 };
 
 export default nextConfig;

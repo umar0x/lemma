@@ -35,3 +35,11 @@ coverage/
 
 # internal scripts (not shipped)
 scripts/
+
+# Local/generated files
+.claude/
+tsconfig.tsbuildinfo
+posthog-self-driving-report.md
+
+# npm lockfile (project uses Bun)
+package-lock.json

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import posthog from "posthog-js";
 import { FileText, Search, Plus, MessageSquare, TriangleAlert } from "lucide-react";
 import { useWorkspace } from "@/state/workspace";
 import { renderDocumentCached } from "@/core/latex/renderCache";
@@ -187,6 +188,10 @@ export function Sidebar({ onNewDocument, onNavigate }: SidebarProps) {
                     )}
                     onClick={() => {
                       openDocument(doc.id);
+                      posthog.capture("document_opened", {
+                        has_errors: doc.errorCount > 0,
+                        open_comment_count: doc.openComments,
+                      });
                       onNavigate?.();
                     }}
                     role="button"
@@ -195,6 +200,10 @@ export function Sidebar({ onNewDocument, onNavigate }: SidebarProps) {
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
                         openDocument(doc.id);
+                        posthog.capture("document_opened", {
+                          has_errors: doc.errorCount > 0,
+                          open_comment_count: doc.openComments,
+                        });
                         onNavigate?.();
                       }
                     }}
@@ -253,6 +262,7 @@ export function Sidebar({ onNewDocument, onNavigate }: SidebarProps) {
                         event.stopPropagation();
                         if (confirmingDelete === doc.id) {
                           deleteDocument(doc.id);
+                          posthog.capture("document_deleted");
                           setConfirmingDelete(null);
                         } else {
                           setConfirmingDelete(doc.id);

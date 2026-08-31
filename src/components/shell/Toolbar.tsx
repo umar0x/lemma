@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import posthog from "posthog-js";
 import {
   CircleHelp,
   Download,
@@ -149,6 +150,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
   const handleExport = () => {
     if (!activeDoc) return;
     exportActiveTex(activeDoc);
+    posthog.capture("tex_exported");
   };
 
   const statusConfig =
@@ -163,8 +165,32 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
   const commitTitle = () => {
     if (!activeDoc) return;
     const next = titleDraft.trim();
-    if (next && next !== activeDoc.title) renameDocument(activeDoc.id, next);
-    else setTitleDraft(activeDoc.title);
+    if (next && next !== activeDoc.title) {
+      renameDocument(activeDoc.id, next);
+      posthog.capture("document_renamed");
+    } else {
+      setTitleDraft(activeDoc.title);
+    }
+  };
+
+  const handleOpenGuide = () => {
+    posthog.capture("agent_guide_opened");
+    onOpenGuide();
+  };
+
+  const handleToggleInspector = () => {
+    posthog.capture("inspector_toggled", { opening: !inspectorOpen });
+    toggleInspector();
+  };
+
+  const handleSetTheme = (newTheme: "light" | "dark") => {
+    posthog.capture("theme_changed", { theme: newTheme });
+    setTheme(newTheme);
+  };
+
+  const handleSetViewMode = (mode: ViewMode) => {
+    posthog.capture("view_mode_changed", { view_mode: mode });
+    setViewMode(mode);
   };
 
   const titleInput = (
@@ -219,8 +245,8 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
 
   const menuItems: MenuItem[] = [
     { label: "Print / export PDF", icon: <Printer size={16} />, onClick: onOpenExport, disabled: !activeDoc },
-    { label: "Connect your agent", icon: <CircleHelp size={16} />, onClick: onOpenGuide },
-    { label: theme === "dark" ? "Light theme" : "Dark theme", icon: theme === "dark" ? <Sun size={16} /> : <Moon size={16} />, onClick: () => setTheme(theme === "dark" ? "light" : "dark") },
+    { label: "Connect your agent", icon: <CircleHelp size={16} />, onClick: handleOpenGuide },
+    { label: theme === "dark" ? "Light theme" : "Dark theme", icon: theme === "dark" ? <Sun size={16} /> : <Moon size={16} />, onClick: () => handleSetTheme(theme === "dark" ? "light" : "dark") },
   ];
 
   return (
@@ -242,7 +268,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
           <SegmentedControl<ViewMode>
             ariaLabel="View mode"
             value={isDesktop ? viewMode : viewMode === "split" ? "preview" : viewMode}
-            onChange={(mode) => setViewMode(mode)}
+            onChange={(mode) => handleSetViewMode(mode)}
             options={viewOptions}
           />
         </div>
@@ -274,7 +300,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
             <IconButton
               label="Open Tool Inspector"
               icon={<Terminal size={15} />}
-              onClick={() => toggleInspector()}
+              onClick={handleToggleInspector}
               active={inspectorOpen}
             />
           </Tooltip>
@@ -282,7 +308,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
             <IconButton
               label="Toggle theme"
               icon={theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => handleSetTheme(theme === "dark" ? "light" : "dark")}
               className="hidden sm:inline-flex"
             />
           </Tooltip>
@@ -293,7 +319,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
         <Tooltip content="How to connect your agent" align="end">
           <button
             type="button"
-            onClick={onOpenGuide}
+            onClick={handleOpenGuide}
             className={cn(
               "hidden h-8 shrink-0 items-center gap-1.5 rounded-ctl border px-2.5 text-[11.5px] font-semibold transition-all lg:inline-flex",
               statusConfig.tone === "forest" &&
@@ -342,7 +368,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
           <SegmentedControl<ViewMode>
             ariaLabel="View mode"
             value={viewMode === "split" ? "preview" : viewMode}
-            onChange={(mode) => setViewMode(mode)}
+            onChange={(mode) => handleSetViewMode(mode)}
             options={viewOptions}
           />
         </div>
@@ -353,7 +379,7 @@ export function Toolbar({ onOpenGuide, onOpenExport }: ToolbarProps) {
         <IconButton
           label="Open Tool Inspector"
           icon={<Terminal size={16} />}
-          onClick={() => toggleInspector()}
+          onClick={handleToggleInspector}
           active={inspectorOpen}
         />
       </div>
