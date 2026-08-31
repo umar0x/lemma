@@ -1,0 +1,124 @@
+"use client";
+
+import { useState } from "react";
+import { BookOpen, FileText, GraduationCap, ListChecks, ScrollText } from "lucide-react";
+import { listTemplates, type TemplateId } from "@/core/templates";
+import { useWorkspace } from "@/state/workspace";
+import { cn } from "@/lib/text";
+import { Dialog } from "@/components/primitives/Dialog";
+import { Button } from "@/components/primitives/Button";
+
+const TEMPLATE_ICONS: Record<TemplateId, typeof FileText> = {
+  blank: FileText,
+  notes: BookOpen,
+  problem_set: ListChecks,
+  exam: GraduationCap,
+  paper_section: ScrollText,
+};
+
+export interface TemplateDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
+  const createDocument = useWorkspace((state) => state.createDocument);
+  const [title, setTitle] = useState("");
+  const [template, setTemplate] = useState<TemplateId>("notes");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCreate = () => {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setError("Give the document a title first.");
+      return;
+    }
+    createDocument(template, trimmed);
+    setTitle("");
+    setTemplate("notes");
+    setError(null);
+    onClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="New document"
+      description="Pick a template to start from. Your agent can reshape everything later."
+      width="620px"
+    >
+      <label className="block">
+        <span className="mb-1.5 block text-[11px] font-semibold tracking-[0.06em] text-ink-faint uppercase">
+          Title
+        </span>
+        <input
+          autoFocus
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value);
+            setError(null);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleCreate();
+            }
+          }}
+          placeholder="e.g. Midterm 2 review"
+          className="h-10 w-full rounded-ctl border border-line bg-inset px-3 text-[14px] text-ink placeholder:text-ink-faint focus:border-bronze focus:bg-card focus:outline-none"
+        />
+      </label>
+      {error ? <p className="mt-1.5 text-[12px] text-oxblood">{error}</p> : null}
+
+      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {listTemplates().map((definition) => {
+          const Icon = TEMPLATE_ICONS[definition.id];
+          const selected = template === definition.id;
+          return (
+            <button
+              key={definition.id}
+              type="button"
+              onClick={() => setTemplate(definition.id)}
+              aria-pressed={selected}
+              className={cn(
+                "flex items-start gap-3 rounded-card border p-3 text-left transition-all duration-150",
+                selected
+                  ? "border-[color-mix(in_srgb,var(--bronze)_45%,transparent)] bg-bronze-soft shadow-soft"
+                  : "border-line bg-card hover:border-line-strong hover:bg-inset",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-ctl border",
+                  selected
+                    ? "border-[color-mix(in_srgb,var(--bronze)_30%,transparent)] bg-card text-bronze"
+                    : "border-line bg-inset text-ink-soft",
+                )}
+              >
+                <Icon size={15} />
+              </span>
+              <span className="min-w-0">
+                <span className={cn("block text-[13.5px] font-semibold", selected ? "text-bronze-ink" : "text-ink")}>
+                  {definition.name}
+                </span>
+                <span className="mt-0.5 block text-[11.5px] leading-snug text-ink-soft">
+                  {definition.description}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 flex justify-end gap-2 border-t border-line pt-4">
+        <Button variant="ghost" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={handleCreate}>
+          Create document
+        </Button>
+      </div>
+    </Dialog>
+  );
+}
