@@ -1,7 +1,8 @@
 {
   "name": "lemma",
-  "version": "0.6.0",
+  "version": "2.0.0",
   "private": true,
+  "description": "Live LaTeX, co-authored with your agent — WebMCP-native, local-first.",
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
     "build": "next build",
@@ -10,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:push": "echo \"Lemma is local-first - no database required.\""
+    "db:push": "echo \"Lemma is local-first — no database required.\""
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -42,12 +43,12 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "eslint": "^9.27.0",
-    "eslint-config-next": "^16.1.1",
     "fake-indexeddb": "^6.0.1",
     "jsdom": "^26.1.0",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "eslint": "^9.27.0",
+    "eslint-config-next": "^16.1.1"
   }
 }

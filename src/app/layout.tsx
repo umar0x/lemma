@@ -7,8 +7,22 @@ import "katex/dist/katex.min.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lemma",
-  description: "Live LaTeX, co-authored with your agent.",
+  title: "Lemma · live LaTeX, co-authored with your agent",
+  description:
+    "A live LaTeX pad where humans and agents co-author math. Block-anchored editing, real-time KaTeX rendering, and a render-error feedback loop that lets agents correct their own mistakes. Built WebMCP-first.",
+  applicationName: "Lemma",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  manifest: "/manifest.webmanifest",
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
