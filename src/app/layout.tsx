@@ -50,10 +50,10 @@ const themeBootstrap = `
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <body>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
-      </head>
-      <body>{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
