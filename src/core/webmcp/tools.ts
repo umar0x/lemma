@@ -39,7 +39,7 @@ const BLOCK_TYPES: BlockType[] = [
   "code",
   "preamble",
 ];
-const TEMPLATES: TemplateId[] = ["blank", "notes", "problem_set", "exam", "paper_section"];
+const TEMPLATES: TemplateId[] = ["blank", "notes", "problem_set", "exam", "paper_section", "demo"];
 const VIEW_MODES = ["source", "split", "preview"] as const;
 const LATEX_BLOCK_CAP = 400;
 const MAX_BLOCKS_PER_CALL = 50;

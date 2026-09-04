@@ -2,7 +2,7 @@ import { createId } from "@/lib/ids";
 import { deriveBlockType } from "@/core/blocks/parse";
 import type { Block, DocumentRecord, ParsedSegment } from "@/core/blocks/types";
 
-export type TemplateId = "blank" | "notes" | "problem_set" | "exam" | "paper_section";
+export type TemplateId = "blank" | "notes" | "problem_set" | "exam" | "paper_section" | "demo";
 
 export interface TemplateDefinition {
   id: TemplateId;
@@ -267,6 +267,51 @@ const templates: TemplateDefinition[] = [
       {
         type: "text",
         latex: "The rate in \\eqref{eq:rate} is minimax up to constants, so no estimator in this class does meaningfully better under (A1) through (A3). Dropping sub-Gaussianity in favor of only finite variance slows the rate, and we leave the heavy-tailed extension open.",
+      },
+    ],
+  },
+  {
+    id: "demo",
+    name: "Demo · integration by parts",
+    description: "Worked example with a deliberate typo for an agent to find and fix.",
+    build: () => [
+      {
+        type: "preamble",
+        latex: [...STANDARD_PREAMBLE, "\\newcommand{\\dv}{\\mathbf{v}}", "\\DeclareMathOperator{\\Var}{Var}"].join("\n"),
+      },
+      {
+        type: "text",
+        latex: "This pad is live: every block renders as you or your agent edits it. Ask your agent to \\textbf{list the render errors in this document}: one block below contains a deliberate typo it can find and fix.",
+      },
+      { type: "text", latex: "\\section{Integration by parts}" },
+      {
+        type: "text",
+        latex: "We evaluate $I = \\int_0^1 x e^x\\,dx$ using integration by parts with $u = x$ and $\\dv = e^x\\,dx$. The picture below shows the region whose area the integral computes.",
+      },
+      {
+        type: "figure",
+        latex: [
+          "\\begin{tikzpicture}[scale=0.85]",
+          "\\draw[->] (0,0) -- (3.4,0) node[right] {$x$};",
+          "\\draw[->] (0,0) -- (0,2.9) node[above] {$x e^x$};",
+          "\\fill[blue!15] plot coordinates {(0,0) (0.4,0.6) (0.8,1.78) (1,2.72)} -- (1,0) -- cycle;",
+          "\\draw[thick, blue] plot coordinates {(0,0) (0.4,0.6) (0.8,1.78) (1,2.72)};",
+          "\\draw[dashed] (1,0) -- (1,2.72);",
+          "\\node[below] at (1,0) {$1$};",
+          "\\end{tikzpicture}",
+        ].join("\n"),
+      },
+      {
+        type: "align",
+        latex: "\\begin{align}\\label{eq:value}\nI &= \\big[ x e^x \\big]_0^1 - \\int_0^1 e^x\\,dx \\\\\n&= e - \\big[ e^x \\big]_0^1 \\\\\n&= e - (e - 1) \\\\\n&= \\alpa \\cdot 0 + 1\n\\end{align}",
+      },
+      {
+        type: "theorem",
+        latex: "\\begin{theorem}[Integration by parts]\\label{thm:ibp}\nIf $u$ and $v$ are differentiable, then $\\int u\\,\\dv = uv - \\int v\\,du$.\n\\end{theorem}",
+      },
+      {
+        type: "text",
+        latex: "Every step of \\eqref{eq:value} is an application of Theorem \\ref{thm:ibp}. Edit any line in the source pane to see the numbering and references update live.",
       },
     ],
   },

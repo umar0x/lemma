@@ -23,9 +23,7 @@ const VIEW_MODES = ["source", "split", "preview"] as const;
 function Splash() {
   return (
     <div className="flex h-dvh flex-col items-center justify-center gap-5 bg-paper">
-      <span className="bg-gradient-brand flex h-14 w-14 animate-pulse items-center justify-center rounded-[18px] shadow-raised">
-        <BrandMark size={30} />
-      </span>
+      <BrandMark size={56} />
       <div className="text-center">
         <div className="font-display text-[20px] font-semibold tracking-[-0.01em] text-ink">Lemma</div>
         <div className="mt-1 text-[12.5px] text-ink-faint">Preparing your workspace…</div>

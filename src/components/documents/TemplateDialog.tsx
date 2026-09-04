@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import posthog from "posthog-js";
-import { BookOpen, FileText, GraduationCap, ListChecks, ScrollText } from "lucide-react";
+import { BookOpen, FileText, FlaskConical, GraduationCap, ListChecks, ScrollText } from "lucide-react";
 import { listTemplates, type TemplateId } from "@/core/templates";
 import { useWorkspace } from "@/state/workspace";
 import { cn } from "@/lib/text";
@@ -15,6 +15,7 @@ const TEMPLATE_ICONS: Record<TemplateId, typeof FileText> = {
   problem_set: ListChecks,
   exam: GraduationCap,
   paper_section: ScrollText,
+  demo: FlaskConical,
 };
 
 export interface TemplateDialogProps {
@@ -22,11 +23,30 @@ export interface TemplateDialogProps {
   onClose: () => void;
 }
 
+const DEFAULT_TEMPLATE: TemplateId = "notes";
+
+function getDefaultTitle(id: TemplateId): string {
+  if (id === "blank") return "Untitled";
+  const def = listTemplates().find((t) => t.id === id);
+  return def?.name ?? "Untitled";
+}
+
 export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
   const createDocument = useWorkspace((state) => state.createDocument);
-  const [title, setTitle] = useState("");
-  const [template, setTemplate] = useState<TemplateId>("notes");
+  const [title, setTitle] = useState(() => getDefaultTitle(DEFAULT_TEMPLATE));
+  const [template, setTemplate] = useState<TemplateId>(DEFAULT_TEMPLATE);
+  const [titleEdited, setTitleEdited] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSelectTemplate = useCallback(
+    (id: TemplateId) => {
+      setTemplate(id);
+      if (!titleEdited) {
+        setTitle(getDefaultTitle(id));
+      }
+    },
+    [titleEdited],
+  );
 
   const handleCreate = () => {
     const trimmed = title.trim();
@@ -36,8 +56,9 @@ export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
     }
     createDocument(template, trimmed);
     posthog.capture("document_created", { template });
-    setTitle("");
-    setTemplate("notes");
+    setTitle(getDefaultTitle(DEFAULT_TEMPLATE));
+    setTemplate(DEFAULT_TEMPLATE);
+    setTitleEdited(false);
     setError(null);
     onClose();
   };
@@ -59,6 +80,7 @@ export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
           value={title}
           onChange={(event) => {
             setTitle(event.target.value);
+            setTitleEdited(true);
             setError(null);
           }}
           onKeyDown={(event) => {
@@ -81,7 +103,7 @@ export function TemplateDialog({ open, onClose }: TemplateDialogProps) {
             <button
               key={definition.id}
               type="button"
-              onClick={() => setTemplate(definition.id)}
+              onClick={() => handleSelectTemplate(definition.id)}
               aria-pressed={selected}
               className={cn(
                 "flex items-start gap-3 rounded-card border p-3 text-left transition-all duration-150",
