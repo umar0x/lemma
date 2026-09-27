@@ -286,7 +286,12 @@ export const useWorkspace = create<WorkspaceState>()((set, get) => {
           : documents[0]?.id ?? null;
       const active = documents.find((d) => d.id === activeId) ?? null;
       const storedTheme = await metaRepository.get<"light" | "dark">("theme");
-      const theme = storedTheme ?? "light";
+      // Fall back to the theme the pre-hydration bootstrap script already resolved
+      // onto <html> (stored preference or prefers-color-scheme), so hydrate() does
+      // not overwrite a dark visitor's theme with light and cause a flash.
+      const theme =
+        storedTheme ??
+        (document.documentElement.classList.contains("dark") ? "dark" : "light");
       let commentsShowResolved = true;
       try {
         commentsShowResolved = localStorage.getItem("lemma.showResolved") !== "0";
